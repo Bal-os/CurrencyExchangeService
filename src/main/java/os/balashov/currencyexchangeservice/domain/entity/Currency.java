@@ -1,10 +1,10 @@
 package os.balashov.currencyexchangeservice.domain.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
+@AllArgsConstructor
 public class Currency {
     private String numberCode;
     private String currencyCode;
