@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface GetCurrencyRatesUseCase {
     List<CurrencyRate> getActualRates();
-    List<CurrencyRate> getRatesByDate(LocalDate currencyDate);
+    List<CurrencyRate> getRatesByDate(LocalDate date);
 }
