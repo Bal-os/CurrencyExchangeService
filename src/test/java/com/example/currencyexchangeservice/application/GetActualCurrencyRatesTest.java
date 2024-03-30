@@ -55,7 +55,7 @@ public class GetActualCurrencyRatesTest implements TestUtils {
         assertEquals(mockRates, actualRates);
         Mockito.inOrder(mockRepository, mockProvider, mockRepository, mockRepository);
         Mockito.verify(mockProvider).getCurrentRates();
-        Mockito.verify(mockRepository, Mockito.times(2)).getCurrencyRates(any(LocalDate.class));
+        Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));
         Mockito.verify(mockRepository).updateCurrencyRate(mockRates);
         Mockito.verifyNoMoreInteractions(mockProvider, mockRepository);
     }

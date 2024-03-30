@@ -68,22 +68,10 @@ public class GetActualCurrencyRatesService implements GetActualCurrencyRatesUseC
     private void updateCurrencyRate(LocalDate date, List<CurrencyRate> currencyRates) {
         try {
             currencyRateRepository.updateCurrencyRate(currencyRates);
-
-            updateExceptionIfDataNotUpdated(date);
         } catch (RuntimeException e) {
             String message = String.format("Failed to update %s currency rates: %s", date, e.getMessage());
             log.error(message);
             repositoryException = new RepositoryException(message, e);
-        }
-    }
-
-    private void updateExceptionIfDataNotUpdated(LocalDate date) {
-        List<CurrencyRate> currencyRates;
-        currencyRates = getRatesFromRepository(date);
-        if (currencyRates.isEmpty()) {
-            String message = String.format("The %s currency rates update is unsuccessful", date);
-            log.error(message);
-            repositoryException = new RepositoryException(message, repositoryException);
         }
     }
 }
