@@ -5,8 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import os.balashov.currencyexchangeservice.application.exeptions.ProviderException;
-import os.balashov.currencyexchangeservice.application.exeptions.RepositoryException;
+import os.balashov.currencyexchangeservice.application.dto.CurrencyRatesDto;
+import os.balashov.currencyexchangeservice.application.exceptions.ProviderException;
+import os.balashov.currencyexchangeservice.application.exceptions.RepositoryException;
 import os.balashov.currencyexchangeservice.application.service.GetActualCurrencyRatesService;
 import os.balashov.currencyexchangeservice.application.utils.CurrencyRateBuilder;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateProvider;
@@ -50,44 +51,13 @@ public class GetActualCurrencyRatesTest implements TestUtils {
         Mockito.when(mockRepository.getCurrencyRates(any(LocalDate.class)))
                 .thenReturn(Collections.emptyList()).thenReturn(mockRates);
 
-        List<CurrencyRate> actualRates = service.getActualRates();
+        CurrencyRatesDto dto = service.getActualRates();
 
-        assertEquals(mockRates, actualRates);
+        assertEquals(mockRates, dto.getCurrencyRates());
         Mockito.inOrder(mockRepository, mockProvider, mockRepository, mockRepository);
         Mockito.verify(mockProvider).getCurrentRates();
         Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));
         Mockito.verify(mockRepository).updateCurrencyRate(mockRates);
-        Mockito.verifyNoMoreInteractions(mockProvider, mockRepository);
-    }
-
-    @Test
-    public void testGetActualRates_EmptyProviderResponse() {
-        List<CurrencyRate> emptyList = Collections.emptyList();
-        Mockito.when(mockRepository.getCurrencyRates(any(LocalDate.class))).thenReturn(emptyList);
-        Mockito.when(mockProvider.getCurrentRates()).thenReturn(emptyList);
-
-        List<CurrencyRate> actualRates = service.getActualRates();
-
-        assertEquals(actualRates, emptyList);
-        assertTrue(actualRates.isEmpty());
-        Mockito.inOrder(mockRepository, mockProvider);
-        Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));
-        Mockito.verify(mockProvider).getCurrentRates();
-        Mockito.verifyNoMoreInteractions(mockProvider, mockRepository);
-    }
-
-    @Test
-    public void testGetActualRates_ErrorProviderResponse() {
-        Mockito.when(mockRepository.getCurrencyRates(any(LocalDate.class))).thenReturn(Collections.emptyList());
-        Exception expectedException = new RuntimeException("mock");
-        Mockito.doThrow(expectedException).when(mockProvider).getCurrentRates();
-
-        Exception exception = assertThrows(ProviderException.class, () -> service.getActualRates());
-
-        assertTrue(exception.getMessage().endsWith(expectedException.getMessage()));
-        Mockito.inOrder(mockRepository, mockProvider);
-        Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));
-        Mockito.verify(mockProvider).getCurrentRates();
         Mockito.verifyNoMoreInteractions(mockProvider, mockRepository);
     }
 
@@ -99,26 +69,61 @@ public class GetActualCurrencyRatesTest implements TestUtils {
         );
         Mockito.when(mockRepository.getCurrencyRates(any(LocalDate.class))).thenReturn(mockRates);
 
-        List<CurrencyRate> actualRates = service.getActualRates();
+        CurrencyRatesDto dto = service.getActualRates();
 
-        assertEquals(mockRates, actualRates);
+        assertEquals(mockRates, dto.getCurrencyRates());
         Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));
         Mockito.verifyNoMoreInteractions(mockRepository);
     }
 
     @Test
-    public void testGetActualRates_UnsuccessfulRepositoryUpdate() {
+    public void testGetActualRates_EmptyProviderResponse() {
+        List<CurrencyRate> emptyList = Collections.emptyList();
+        Mockito.when(mockRepository.getCurrencyRates(any(LocalDate.class))).thenReturn(emptyList);
+        Mockito.when(mockProvider.getCurrentRates()).thenReturn(emptyList);
+
+        CurrencyRatesDto dto = service.getActualRates();
+
+        assertEquals(dto.getCurrencyRates(), emptyList);
+        assertTrue(dto.getCurrencyRates().isEmpty());
+        Mockito.inOrder(mockRepository, mockProvider);
+        Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));
+        Mockito.verify(mockProvider).getCurrentRates();
+        Mockito.verifyNoMoreInteractions(mockProvider, mockRepository);
+    }
+
+    @Test
+    public void testGetActualRates_ErrorProviderResponse() {
+        Mockito.when(mockRepository.getCurrencyRates(any(LocalDate.class))).thenReturn(Collections.emptyList());
+        String exceptionMessage = "Failed to get";
+        Mockito.doThrow(new RuntimeException()).when(mockProvider).getCurrentRates();
+
+        CurrencyRatesDto dto = service.getActualRates();
+
+        assertTrue(dto.getException().getMessage().startsWith(exceptionMessage));
+        assertTrue(dto.getException() instanceof ProviderException);
+        Mockito.inOrder(mockRepository, mockProvider);
+        Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));
+        Mockito.verify(mockProvider).getCurrentRates();
+        Mockito.verifyNoMoreInteractions(mockProvider, mockRepository);
+    }
+
+    @Test
+    public void testGetActualRates_ErrorRepositoryResponse() {
         List<CurrencyRate> mockRates = Arrays.asList(
                 CurrencyRateBuilder.builder().currency(codeCurrencyMap.get("USD")).currencyRate(1.0).build(),
                 CurrencyRateBuilder.builder().currency(codeCurrencyMap.get("EUR")).currencyRate(0.9).build()
         );
-        Mockito.when(mockRepository.getCurrencyRates(any(LocalDate.class))).thenReturn(Collections.emptyList());
+        String exceptionMessage = "Failed to get";
+        Mockito.doThrow(new RuntimeException()).when(mockRepository).getCurrencyRates(any(LocalDate.class));
         Mockito.when(mockProvider.getCurrentRates()).thenReturn(mockRates);
-        Mockito.doThrow(new RuntimeException("mock")).when(mockRepository).updateCurrencyRate(mockRates);
+        Mockito.when(mockRepository.getCurrencyRates(any(LocalDate.class))).thenThrow(new RuntimeException());
 
-        List<CurrencyRate> actualRates = service.getActualRates();
+        CurrencyRatesDto dto = service.getActualRates();
 
-        assertEquals(mockRates, actualRates);
+        assertEquals(mockRates, dto.getCurrencyRates());
+        assertTrue(dto.getException().getMessage().startsWith(exceptionMessage));
+        assertTrue(dto.getException() instanceof RepositoryException);
         Mockito.inOrder(mockRepository, mockProvider, mockRepository);
         Mockito.verify(mockProvider).getCurrentRates();
         Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));

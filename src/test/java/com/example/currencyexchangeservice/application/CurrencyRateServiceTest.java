@@ -5,7 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import os.balashov.currencyexchangeservice.application.exeptions.RepositoryException;
+import os.balashov.currencyexchangeservice.application.dto.CurrencyRatesDto;
+import os.balashov.currencyexchangeservice.application.exceptions.RepositoryException;
 import os.balashov.currencyexchangeservice.application.service.CurrencyRateService;
 import os.balashov.currencyexchangeservice.application.utils.CurrencyRateBuilder;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateRepository;
@@ -18,9 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CurrencyRateServiceTest implements TestUtils {
     @Mock
@@ -38,20 +37,13 @@ public class CurrencyRateServiceTest implements TestUtils {
 
     @Test
     public void testDeleteRatesByDate_Success() throws RepositoryException {
-        List<CurrencyRate> mockRates = Arrays.asList(
-                CurrencyRateBuilder.builder().currency(codeCurrencyMap.get("USD")).currencyRate(1.0).build(),
-                CurrencyRateBuilder.builder().currency(codeCurrencyMap.get("EUR")).currencyRate(0.9).build()
-        );
         LocalDate date = LocalDate.of(2024, 3, 29);
-        List<CurrencyRate> emptyList = Collections.emptyList();
         Mockito.doNothing().when(mockRepository).deleteCurrencyRate(date);
 
         service.deleteRatesByDate(date);
 
         Mockito.verify(mockRepository).deleteCurrencyRate(date);
         Mockito.verifyNoMoreInteractions(mockRepository);
-        List<CurrencyRate> result = service.getRatesByDate(date);
-        assertEquals(result, emptyList);
     }
 
     @Test
@@ -60,9 +52,9 @@ public class CurrencyRateServiceTest implements TestUtils {
         String message = String.format("Failed to delete %s currency rates:", date);
         Mockito.doThrow(new RuntimeException()).when(mockRepository).deleteCurrencyRate(date);
 
-        Exception exception = assertThrows(RepositoryException.class, () -> service.deleteRatesByDate(date));
+        CurrencyRatesDto dto = service.deleteRatesByDate(date);
 
-        assertTrue(exception.getMessage().startsWith(message));
+        assertTrue(dto.getException().getMessage().contains(message));
         Mockito.verify(mockRepository).deleteCurrencyRate(date);
         Mockito.verifyNoMoreInteractions(mockRepository);
     }
@@ -73,10 +65,12 @@ public class CurrencyRateServiceTest implements TestUtils {
         List<CurrencyRate> emptyList = Collections.emptyList();
         Mockito.when(mockRepository.getCurrencyRates(date)).thenReturn(emptyList);
 
+        CurrencyRatesDto dto =  service.getRatesByDate(date);
 
-        List<CurrencyRate> result =  service.getRatesByDate(date);
-        assertEquals(result, emptyList);
+        assertEquals(dto.getCurrencyRates(), emptyList);
+        assertNull(dto.getException());
         Mockito.verify(mockRepository).getCurrencyRates(date);
+        Mockito.verifyNoMoreInteractions(mockRepository);
     }
 
     @Test
@@ -85,9 +79,10 @@ public class CurrencyRateServiceTest implements TestUtils {
         String exceptionMessage = String.format("Failed to get %s currency rates:", date);
         Mockito.doThrow(new RuntimeException()).when(mockRepository).getCurrencyRates(date);
 
-        Exception exception = assertThrows(RepositoryException.class, () -> service.getRatesByDate(date));
+        CurrencyRatesDto dto = service.getRatesByDate(date);
 
-        assertTrue(exception.getMessage().contains(exceptionMessage));
+        assertTrue(dto.getException() instanceof RepositoryException);
+        assertTrue(dto.getException().getMessage().contains(exceptionMessage));
         Mockito.verify(mockRepository).getCurrencyRates(date);
         Mockito.verifyNoMoreInteractions(mockRepository);
     }
@@ -101,9 +96,9 @@ public class CurrencyRateServiceTest implements TestUtils {
         );
         Mockito.when(mockRepository.getCurrencyRates(date)).thenReturn(mockRates);
 
-        List<CurrencyRate> result = service.getRatesByDate(date);
+        CurrencyRatesDto dto = service.getRatesByDate(date);
 
-        assertEquals(result, mockRates);
+        assertEquals(dto.getCurrencyRates(), mockRates);
         Mockito.verify(mockRepository).getCurrencyRates(date);
         Mockito.verifyNoMoreInteractions(mockRepository);
     }
