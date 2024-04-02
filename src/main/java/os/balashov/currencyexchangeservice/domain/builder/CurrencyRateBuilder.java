@@ -1,4 +1,4 @@
-package os.balashov.currencyexchangeservice.application.utils;
+package os.balashov.currencyexchangeservice.domain.builder;
 
 import os.balashov.currencyexchangeservice.domain.entity.Currency;
 import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 public class CurrencyRateBuilder {
     private String currencyName;
-    private String currencyDescription;
     private String currencyCode;
     private String currencyNumberCode;
     private Double rate;
@@ -28,11 +27,6 @@ public class CurrencyRateBuilder {
         return this;
     }
 
-    public CurrencyRateBuilder currencyDescription(String currencyDescription) {
-        this.currencyDescription = currencyDescription;
-        return this;
-    }
-
     public CurrencyRateBuilder currencyNumberCode(String currencyNumberCode) {
         this.currencyNumberCode = currencyNumberCode;
         return this;
@@ -41,7 +35,6 @@ public class CurrencyRateBuilder {
         this.currencyCode = currency.currencyCode();
         this.currencyName = currency.name();
         this.currencyNumberCode = currency.numberCode();
-        this.currencyDescription = currency.description();
         return this;
     }
 
@@ -61,8 +54,7 @@ public class CurrencyRateBuilder {
     }
 
     public CurrencyRate build() {
-        Currency currency = new Currency(this.currencyNumberCode,
-                this.currencyCode, this.currencyName, this.currencyDescription);
+        Currency currency = new Currency(this.currencyNumberCode, this.currencyCode, this.currencyName);
         return new CurrencyRate(currency, this.rate, this.date, this.time);
     }
 }

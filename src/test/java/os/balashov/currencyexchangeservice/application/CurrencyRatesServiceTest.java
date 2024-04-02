@@ -1,15 +1,17 @@
-package com.example.currencyexchangeservice.application;
+package os.balashov.currencyexchangeservice.application;
 
-import com.example.currencyexchangeservice.TestUtils;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import os.balashov.currencyexchangeservice.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import os.balashov.currencyexchangeservice.application.dto.CurrencyRatesDto;
-import os.balashov.currencyexchangeservice.application.exceptions.ProviderException;
-import os.balashov.currencyexchangeservice.application.exceptions.RepositoryException;
-import os.balashov.currencyexchangeservice.application.service.GetActualCurrencyRatesService;
-import os.balashov.currencyexchangeservice.application.utils.CurrencyRateBuilder;
+import os.balashov.currencyexchangeservice.application.exception.ProviderException;
+import os.balashov.currencyexchangeservice.application.exception.RepositoryException;
+import os.balashov.currencyexchangeservice.application.service.CurrencyRatesService;
+import os.balashov.currencyexchangeservice.domain.builder.CurrencyRateBuilder;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateProvider;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateRepository;
 import os.balashov.currencyexchangeservice.domain.entity.Currency;
@@ -24,19 +26,17 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
-public class GetActualCurrencyRatesTest implements TestUtils {
+public class CurrencyRatesServiceTest implements TestUtils {
     @Mock
     private CurrencyRateProvider mockProvider;
     @Mock
     private CurrencyRateRepository mockRepository;
-    private GetActualCurrencyRatesService service;
+    @InjectMocks
+    private CurrencyRatesService service;
     private Map<String, Currency> codeCurrencyMap;
     @BeforeEach
     public void setUp() {
-        mockProvider = Mockito.mock(CurrencyRateProvider.class);
-        mockRepository = Mockito.mock(CurrencyRateRepository.class);
-        service = new GetActualCurrencyRatesService(mockRepository, mockProvider);
-
+        MockitoAnnotations.openMocks(this);
         codeCurrencyMap = codeCurrencyMap();
     }
 
@@ -127,7 +127,50 @@ public class GetActualCurrencyRatesTest implements TestUtils {
         Mockito.inOrder(mockRepository, mockProvider, mockRepository);
         Mockito.verify(mockProvider).getCurrentRates();
         Mockito.verify(mockRepository).getCurrencyRates(any(LocalDate.class));
-        Mockito.verify(mockRepository).updateCurrencyRate(mockRates);
         Mockito.verifyNoMoreInteractions(mockProvider, mockRepository);
+    }
+
+    @Test
+    void testGetRatesByDate_ReturnsEmptyList() {
+        LocalDate date = LocalDate.of(2023, 12, 31);
+        List<CurrencyRate> emptyList = Collections.emptyList();
+        Mockito.when(mockRepository.getCurrencyRates(date)).thenReturn(emptyList);
+
+        CurrencyRatesDto dto =  service.getRatesByDate(date);
+
+        assertEquals(dto.getCurrencyRates(), emptyList);
+        assertNull(dto.getException());
+        Mockito.verify(mockRepository).getCurrencyRates(date);
+        Mockito.verifyNoMoreInteractions(mockRepository);
+    }
+
+    @Test
+    void testGetRatesByDate_Fail() {
+        LocalDate date = LocalDate.of(2023, 12, 31);
+        String exceptionMessage = String.format("Failed to get %s currency rates:", date);
+        Mockito.doThrow(new RuntimeException()).when(mockRepository).getCurrencyRates(date);
+
+        CurrencyRatesDto dto = service.getRatesByDate(date);
+
+        assertTrue(dto.getException() instanceof RepositoryException);
+        assertTrue(dto.getException().getMessage().contains(exceptionMessage));
+        Mockito.verify(mockRepository).getCurrencyRates(date);
+        Mockito.verifyNoMoreInteractions(mockRepository);
+    }
+
+    @Test
+    void testGetRatesByDate_Success() {
+        LocalDate date = LocalDate.of(2023, 12, 31);
+        List<CurrencyRate> mockRates = Arrays.asList(
+                CurrencyRateBuilder.builder().currency(codeCurrencyMap.get("USD")).currencyRate(10.0).build(),
+                CurrencyRateBuilder.builder().currency(codeCurrencyMap.get("EUR")).currencyRate(12.9).build()
+        );
+        Mockito.when(mockRepository.getCurrencyRates(date)).thenReturn(mockRates);
+
+        CurrencyRatesDto dto = service.getRatesByDate(date);
+
+        assertEquals(dto.getCurrencyRates(), mockRates);
+        Mockito.verify(mockRepository).getCurrencyRates(date);
+        Mockito.verifyNoMoreInteractions(mockRepository);
     }
 }
