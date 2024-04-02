@@ -1,8 +1,6 @@
 package os.balashov.currencyexchangeservice.infrastructure.data.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateHistory;
 
 import java.time.LocalDate;

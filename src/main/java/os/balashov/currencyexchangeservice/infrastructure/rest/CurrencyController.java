@@ -12,10 +12,7 @@ import os.balashov.currencyexchangeservice.application.usecase.GetCurrencyRatesU
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Slf4j
 @RestController

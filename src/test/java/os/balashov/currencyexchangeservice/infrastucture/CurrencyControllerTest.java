@@ -52,7 +52,7 @@ public class CurrencyControllerTest implements TestUtils {
 
     @Test
     public void testGetRatesByDate() {
-        String date = "2022-12-01";;
+        String date = "2022-12-01";
         CurrencyRatesDto currencyRatesDto = CurrencyRatesDto.builder()
                 .currencyRates(createMockCurrencyRates(LocalDate.parse(date)))
                 .build();

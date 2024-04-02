@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import os.balashov.currencyexchangeservice.TestUtils;
-import os.balashov.currencyexchangeservice.domain.entity.Currency;
 import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateEntity;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateHistory;
@@ -21,7 +20,6 @@ import os.balashov.currencyexchangeservice.infrastructure.data.utils.mapper.Rate
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -99,6 +99,6 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
     }
 
     private boolean isNotOld(LocalDate expectedDay, CurrencyRate currencyRate) {
-        return !LocalDate.now().isAfter(expectedDay);
+        return !expectedDay.isAfter(currencyRate.currencyDate());
     }
 }

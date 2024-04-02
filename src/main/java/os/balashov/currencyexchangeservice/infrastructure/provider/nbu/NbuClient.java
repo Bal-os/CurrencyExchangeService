@@ -11,14 +11,11 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 import os.balashov.currencyexchangeservice.domain.builder.CurrencyRateBuilder;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateProvider;
 import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

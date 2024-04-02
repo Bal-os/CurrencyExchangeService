@@ -35,7 +35,7 @@ public class CurrencyRateMutationRepositoryImpl implements CurrencyRateMutationR
     }
 
     private String buildCopySql(String sourceTable, String destinationTable, String columnList) {
-        String sql = "INSERT INTO " +
+        return "INSERT INTO " +
                 destinationTable +
                 " (" +
                 columnList +
@@ -44,7 +44,6 @@ public class CurrencyRateMutationRepositoryImpl implements CurrencyRateMutationR
                 columnList +
                 " FROM " +
                 sourceTable;
-        return sql;
     }
 
     private String getTableName(Class<?> entityClass) {
