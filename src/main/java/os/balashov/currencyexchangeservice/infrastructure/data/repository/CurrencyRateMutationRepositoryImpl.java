@@ -35,6 +35,11 @@ public class CurrencyRateMutationRepositoryImpl implements CurrencyRateMutationR
     }
 
     private String buildCopySql(String sourceTable, String destinationTable, String columnList) {
+        String[] columns = columnList.split(", ");
+        String whereClause = Arrays.stream(columns)
+                .map(column -> column + " IS NOT NULL")
+                .collect(Collectors.joining(" AND "));
+
         return "INSERT INTO " +
                 destinationTable +
                 " (" +
@@ -43,8 +48,11 @@ public class CurrencyRateMutationRepositoryImpl implements CurrencyRateMutationR
                 "SELECT " +
                 columnList +
                 " FROM " +
-                sourceTable;
+                sourceTable +
+                " WHERE " +
+                whereClause;
     }
+
 
     private String getTableName(Class<?> entityClass) {
         Table tableAnnotation = entityClass.getAnnotation(Table.class);

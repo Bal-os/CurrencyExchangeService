@@ -12,8 +12,8 @@ import os.balashov.currencyexchangeservice.application.usecase.DeleteCurrencyRat
 import os.balashov.currencyexchangeservice.application.usecase.GetActualCurrencyRatesUseCase;
 import os.balashov.currencyexchangeservice.application.usecase.GetCurrencyRatesUseCase;
 import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
-import os.balashov.currencyexchangeservice.infrastructure.rest.CurrencyController;
-import os.balashov.currencyexchangeservice.infrastructure.rest.CurrencyResponseDto;
+import os.balashov.currencyexchangeservice.infrastructure.rest.controlers.CurrencyController;
+import os.balashov.currencyexchangeservice.infrastructure.rest.dto.CurrencyResponseDto;
 import os.balashov.currencyexchangeservice.utils.CurrencyRatesDtoBuilder;
 import os.balashov.currencyexchangeservice.utils.TestUtils;
 
@@ -49,7 +49,7 @@ public class CurrencyControllerTest implements TestUtils {
                 .build();
         when(getCurrencyRatesUseCase.getRates(any(LocalDate.class))).thenReturn(currencyRatesDto);
 
-        ResponseEntity<CurrencyResponseDto> response = currencyController.getRatesByDate(date);
+        ResponseEntity<CurrencyResponseDto> response = currencyController.getRates(date);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody().getData());
@@ -62,7 +62,7 @@ public class CurrencyControllerTest implements TestUtils {
     public void testGetRatesByDateWhenDateIsInvalid() {
         String date = "invalid-date";
 
-        ResponseEntity<CurrencyResponseDto> response = currencyController.getRatesByDate(date);
+        ResponseEntity<CurrencyResponseDto> response = currencyController.getRates(date);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody().getMessage());
@@ -79,7 +79,7 @@ public class CurrencyControllerTest implements TestUtils {
                 .build();
         when(getActualCurrencyRatesUseCase.getActualRates()).thenReturn(currencyRatesDto);
 
-        ResponseEntity<CurrencyResponseDto> response = currencyController.getRatesByDate(date);
+        ResponseEntity<CurrencyResponseDto> response = currencyController.getRates(date);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody().getData());
@@ -93,7 +93,7 @@ public class CurrencyControllerTest implements TestUtils {
         String date = "2022-12-01";
         when(deleteCurrencyRateUseCase.deleteRates(any(LocalDate.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<CurrencyResponseDto> response = currencyController.deleteRatesByDate(date);
+        ResponseEntity<CurrencyResponseDto> response = currencyController.deleteRates(date);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody().getMessage());
@@ -104,7 +104,7 @@ public class CurrencyControllerTest implements TestUtils {
     public void testDeleteRatesByDateWhenDateIsInvalid() {
         String date = "invalid-date";
 
-        ResponseEntity<CurrencyResponseDto> response = currencyController.deleteRatesByDate(date);
+        ResponseEntity<CurrencyResponseDto> response = currencyController.deleteRates(date);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody().getMessage());
@@ -115,7 +115,7 @@ public class CurrencyControllerTest implements TestUtils {
     public void testDeleteRatesByDateWhenDateIsEmpty() {
         String date = "";
 
-        ResponseEntity<CurrencyResponseDto> response = currencyController.deleteRatesByDate(date);
+        ResponseEntity<CurrencyResponseDto> response = currencyController.deleteRates(date);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody().getMessage());

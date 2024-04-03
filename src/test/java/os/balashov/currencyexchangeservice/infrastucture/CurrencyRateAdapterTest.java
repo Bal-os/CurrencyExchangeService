@@ -75,10 +75,12 @@ public class CurrencyRateAdapterTest implements TestUtils {
         List<CurrencyRateEntity> mockEntities = mockRates.stream()
                 .map(currencyRateEntityMapper::toCurrencyRateEntity)
                 .toList();
-        List<CurrencyRateEntity> historyEntities = historyRates.stream()
-                .map(currencyRateEntityMapper::toCurrencyRateEntity)
+        List<CurrencyRateHistory> historyEntities = historyRates.stream()
+                .map(currencyRateHistoryMapper::toCurrencyRateHistoryEntity)
                 .toList();
-        when(rateCacheRepository.findAll()).thenReturn(historyEntities);
+        when(rateCacheRepository.isValidDataPresent()).thenReturn(true);
+        when(rateCacheRepository.findAllByDateGreaterThanEqual(date)).thenReturn(mockEntities);
+        when(rateHistoryRepository.findByDate(historyDate)).thenReturn(historyEntities);
         when(rateCacheRepository.saveAllAndFlush(mockEntities)).thenReturn(mockEntities);
 
         currencyRateAdapter.updateCurrencyRate(mockRates);
@@ -93,7 +95,7 @@ public class CurrencyRateAdapterTest implements TestUtils {
     public void testGetCurrencyRates_ShouldReturnCurrencyRatesFromCache() {
         LocalDate today = LocalDate.now();
         List<CurrencyRateEntity> mockEntities = Collections.singletonList(createMockCurrencyRateEntity());
-        when(rateCacheRepository.findAll()).thenReturn(mockEntities);
+        when(rateCacheRepository.findAllByDateGreaterThanEqual(today)).thenReturn(mockEntities);
 
         List<CurrencyRate> retrievedRates = currencyRateAdapter.getCurrencyRates(today);
 

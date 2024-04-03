@@ -2,7 +2,7 @@ package os.balashov.currencyexchangeservice.application.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import os.balashov.currencyexchangeservice.application.exception.CurrencyRateException;
+import os.balashov.currencyexchangeservice.application.exception.RateDataSourceException;
 import os.balashov.currencyexchangeservice.application.exception.RepositoryException;
 import os.balashov.currencyexchangeservice.application.usecase.DeleteCurrencyRateUseCase;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateRepository;
@@ -16,7 +16,7 @@ public class DeleteCurrencyRateService implements DeleteCurrencyRateUseCase {
     private final CurrencyRateRepository currencyRateRepository;
 
     @Override
-    public Optional<CurrencyRateException> deleteRates(LocalDate date) {
+    public Optional<RateDataSourceException> deleteRates(LocalDate date) {
         log.info("Deleting rates by date: {}", date);
         try {
             currencyRateRepository.deleteCurrencyRate(date);

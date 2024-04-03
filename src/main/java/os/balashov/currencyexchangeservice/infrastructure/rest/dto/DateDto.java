@@ -1,18 +1,16 @@
-package os.balashov.currencyexchangeservice.infrastructure.rest;
+package os.balashov.currencyexchangeservice.infrastructure.rest.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import os.balashov.currencyexchangeservice.application.exception.CurrencyRateException;
+import os.balashov.currencyexchangeservice.application.exception.RateDataSourceException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DateDto {
     private final Optional<LocalDate> dateObj;
-    private final Optional<CurrencyRateException> exception;
+    private final Optional<RateDataSourceException> exception;
 
-    private DateDto(Optional<LocalDate> dateObj, Optional<CurrencyRateException> exception) {
+    private DateDto(Optional<LocalDate> dateObj, Optional<RateDataSourceException> exception) {
         this.dateObj = dateObj;
         this.exception = exception;
     }
@@ -35,12 +33,12 @@ public class DateDto {
             dateObj = LocalDate.parse(date);
         } catch (DateTimeParseException e) {
             return new DateDto(Optional.empty(),
-                    Optional.of(new CurrencyRateException("Failed to parse date: " + date, e)));
+                    Optional.of(new RateDataSourceException("Failed to parse date: " + date, e)));
         }
 
-        if (LocalDate.now().isBefore(dateObj)) {
+        if (dateObj.isAfter(LocalDate.now())) {
             return new DateDto(Optional.empty(),
-                    Optional.of(new CurrencyRateException("Date is in the future: " + date)));
+                    Optional.of(new RateDataSourceException("Date is in the future: " + date)));
         }
         return new DateDto(Optional.of(dateObj), Optional.empty());
     }

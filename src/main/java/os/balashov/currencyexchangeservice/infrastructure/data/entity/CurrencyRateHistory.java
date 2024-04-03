@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "currency_rate_history", indexes = {
-        @Index(name = "idx_date", columnList = "rate_date", unique = true)
+        @Index(name = "idx_date", columnList = "rate_date")
 })
 public class CurrencyRateHistory extends AbstractRateEntity {
     public CurrencyRateHistory(AbstractRateEntity entity) {

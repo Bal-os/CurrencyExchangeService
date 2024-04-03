@@ -2,6 +2,8 @@ package os.balashov.currencyexchangeservice.infrastructure.data.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -38,7 +40,7 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
             return;
         }
 
-        if (isRateCacheNotEmpty()) {
+        if (rateCacheRepository.isValidDataPresent()) {
             LocalDate date = getDate(currencyRates);
             rateHistoryRepository.deleteByDate(date);
             historyMutationRepository.copyDataFromActualTableToHistory();
@@ -53,6 +55,7 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
 
     @Override
     @Transactional(readOnly = true)
+    @Retryable(retryFor = Exception.class, maxAttempts = 4, backoff = @Backoff(delay = 100, multiplier = 2))
     public List<CurrencyRate> getCurrencyRates(LocalDate date) {
         log.info("Getting currency rates for date: {}", date);
         if (LocalDate.now().isAfter(date)) {
@@ -75,10 +78,6 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
         if (!LocalDate.now().equals(date)) {
             rateHistoryRepository.deleteByDate(date);
         }
-    }
-
-    private boolean isRateCacheNotEmpty() {
-        return !rateCacheRepository.findAllValid().isEmpty();
     }
 
     private LocalDate getDate(List<CurrencyRate> currencyRates) {

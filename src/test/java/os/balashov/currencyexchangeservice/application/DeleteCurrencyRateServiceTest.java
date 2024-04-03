@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import os.balashov.currencyexchangeservice.utils.TestUtils;
-import os.balashov.currencyexchangeservice.application.exception.CurrencyRateException;
+import os.balashov.currencyexchangeservice.application.exception.RateDataSourceException;
 import os.balashov.currencyexchangeservice.application.service.DeleteCurrencyRateService;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateRepository;
 
@@ -44,7 +44,7 @@ public class DeleteCurrencyRateServiceTest implements TestUtils {
         String message = String.format("Failed to delete %s currency rates:", date);
         Mockito.doThrow(new RuntimeException()).when(mockRepository).deleteCurrencyRate(date);
 
-        Optional<CurrencyRateException> exception = service.deleteRates(date);
+        Optional<RateDataSourceException> exception = service.deleteRates(date);
 
         assertTrue(exception.isPresent());
         assertTrue(exception.get().getMessage().contains(message));

@@ -1,14 +1,14 @@
-package os.balashov.currencyexchangeservice.infrastructure.rest;
+package os.balashov.currencyexchangeservice.infrastructure.rest.enums;
 
 import lombok.Getter;
 
 @Getter
-public enum Status {
+public enum StatusEnum {
     SUCCESS("succes"), ERROR("error");
 
     private final String status;
 
-    Status(String status) {
+    StatusEnum(String status) {
         this.status = status;
     }
 }
