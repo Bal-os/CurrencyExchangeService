@@ -6,12 +6,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import os.balashov.currencyexchangeservice.TestUtils;
-import os.balashov.currencyexchangeservice.application.dto.CurrencyRatesDto;
+import os.balashov.currencyexchangeservice.utils.TestUtils;
+import os.balashov.currencyexchangeservice.application.exception.CurrencyRateException;
 import os.balashov.currencyexchangeservice.application.service.DeleteCurrencyRateService;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateRepository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,7 +32,7 @@ public class DeleteCurrencyRateServiceTest implements TestUtils {
         LocalDate date = LocalDate.of(2024, 3, 29);
         Mockito.doNothing().when(mockRepository).deleteCurrencyRate(date);
 
-        service.deleteRatesByDate(date);
+        service.deleteRates(date);
 
         Mockito.verify(mockRepository).deleteCurrencyRate(date);
         Mockito.verifyNoMoreInteractions(mockRepository);
@@ -43,9 +44,10 @@ public class DeleteCurrencyRateServiceTest implements TestUtils {
         String message = String.format("Failed to delete %s currency rates:", date);
         Mockito.doThrow(new RuntimeException()).when(mockRepository).deleteCurrencyRate(date);
 
-        CurrencyRatesDto dto = service.deleteRatesByDate(date);
+        Optional<CurrencyRateException> exception = service.deleteRates(date);
 
-        assertTrue(dto.getException().getMessage().contains(message));
+        assertTrue(exception.isPresent());
+        assertTrue(exception.get().getMessage().contains(message));
         Mockito.verify(mockRepository).deleteCurrencyRate(date);
         Mockito.verifyNoMoreInteractions(mockRepository);
     }

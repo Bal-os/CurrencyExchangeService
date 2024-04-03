@@ -3,18 +3,14 @@ package os.balashov.currencyexchangeservice.application.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import os.balashov.currencyexchangeservice.application.dto.CurrencyRatesDto;
-import os.balashov.currencyexchangeservice.application.exception.CurrencyRateException;
 import os.balashov.currencyexchangeservice.application.exception.ProviderException;
 import os.balashov.currencyexchangeservice.application.exception.RepositoryException;
+import os.balashov.currencyexchangeservice.application.usecase.GetActualCurrencyRatesUseCase;
 import os.balashov.currencyexchangeservice.application.usecase.GetCurrencyRatesUseCase;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateProvider;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateRepository;
-import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
-import os.balashov.currencyexchangeservice.application.usecase.GetActualCurrencyRatesUseCase;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @AllArgsConstructor
@@ -31,65 +27,55 @@ public class CurrencyRatesService implements GetCurrencyRatesUseCase, GetActualC
     @Override
     public CurrencyRatesDto getActualRates() {
         log.info("Getting actual rates");
-        CurrencyRatesDto dto;
         LocalDate date = LocalDate.now();
-        dto = getRatesByDate(date);
+        var dto = getRatesFromRepository(date);
 
-        if (dto.isFallible() || dto.getCurrencyRates().isEmpty()) {
-            dto = getRatesFromProviderAndUpdateRepository(date, dto.getException());
+        if (dto.isEmptyOrFailed()) {
+            dto = getRatesFromProvider(date);
         }
-        return dto;
-    }
-
-    @Override
-    public CurrencyRatesDto getRatesByDate(LocalDate date) {
-        log.info("Getting rates by date: {}", date);
-        CurrencyRatesDto.CurrencyRatesDtoBuilder builder = CurrencyRatesDto.builder();
-        try {
-            builder.currencyRates(currencyRateRepository.getCurrencyRates(date));
-        } catch(RuntimeException e) {
-            String message = String.format("Failed to get %s currency rates: %s", date, e.getMessage());
-            log.error(message);
-            builder.exception(new RepositoryException(message, e));
-        }
-        return builder.rateDate(date).build();
-    }
-
-    private CurrencyRatesDto getRatesFromProviderAndUpdateRepository(LocalDate date, CurrencyRateException ex) {
-        log.info("Getting rates from provider and updating repository for date: {}", date);
-        CurrencyRatesDto dto = getRatesFromProvider(date);
-        if (Objects.nonNull(ex)) {
-            dto.setException(ex);
-        }
-        if (!dto.isFallible() && !dto.getCurrencyRates().isEmpty()) {
+        if (dto.isUpdatable()) {
             updateCurrencyRate(dto);
         }
         return dto;
     }
 
-    private CurrencyRatesDto getRatesFromProvider(LocalDate date) {
-        log.info("Getting rates from provider for date: {}", date);
-        CurrencyRatesDto.CurrencyRatesDtoBuilder builder = CurrencyRatesDto.builder();
+    @Override
+    public CurrencyRatesDto getRates(LocalDate date) {
+        log.info("Getting rates by date: {}", date);
+        return getRatesFromRepository(date);
+    }
+
+    private CurrencyRatesDto getRatesFromRepository(LocalDate date) {
+        log.info("Getting rates from repository for date: {}", date);
         try {
-            List<CurrencyRate> currencyRates = currencyRateProvider.getCurrentRates();
-            builder.currencyRates(currencyRates);
+            return CurrencyRatesDto.create(date, true, currencyRateRepository.getCurrencyRates(date));
         } catch (RuntimeException e) {
             String message = String.format("Failed to get %s currency rates: %s", date, e.getMessage());
             log.error(message);
-            builder.exception(new ProviderException(message, e));
+            return CurrencyRatesDto.create(date, true, new RepositoryException(message, e));
         }
-        return builder.rateDate(date).build();
     }
 
+    private CurrencyRatesDto getRatesFromProvider(LocalDate date) {
+        log.info("Getting rates from provider for date: {}", date);
+        try {
+            return CurrencyRatesDto.create(date, false, currencyRateProvider.getCurrentRates());
+        } catch (RuntimeException e) {
+            String message = String.format("Failed to get %s currency rates: %s", date, e.getMessage());
+            log.error(message);
+            return CurrencyRatesDto.create(date, false, new ProviderException(message, e));
+        }
+    }
 
     private void updateCurrencyRate(CurrencyRatesDto dto) {
-        log.info("Updating currency rate for date: {}", dto.getRateDate());
+        log.info("Updating currency rate for date: {}", dto.rateDate());
         try {
-            currencyRateRepository.updateCurrencyRate(dto.getCurrencyRates());
+            currencyRateRepository.updateCurrencyRate(dto.currencyRates());
         } catch (RuntimeException e) {
-            String message = String.format("Failed to update %s currency rates: %s", dto.getRateDate(), e.getMessage());
+            String message = String.format("Failed to update %s currency rates: %s", dto.rateDate(), e.getMessage());
             log.error(message);
-            dto.setException(new RepositoryException(message, e));
+            //the request is internal. User does not need to know if we failed in caching the data.
+            //dto.setException(new RepositoryException(message, e));
         }
     }
 }

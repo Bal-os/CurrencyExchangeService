@@ -18,7 +18,6 @@ import os.balashov.currencyexchangeservice.infrastructure.data.utils.mapper.Rate
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -40,7 +39,7 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
         }
 
         if (isRateCacheNotEmpty()) {
-            LocalDate date = currencyRates.isEmpty() ? LocalDate.now() : currencyRates.get(0).currencyDate();
+            LocalDate date = getDate(currencyRates);
             rateHistoryRepository.deleteByDate(date);
             historyMutationRepository.copyDataFromActualTableToHistory();
         }
@@ -62,10 +61,9 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
                     .map(currencyRateHistoryMapper::toCurrencyRate)
                     .toList();
         } else {
-            return rateCacheRepository.findAll()
+            return rateCacheRepository.findAllByDateGreaterThanEqual(date)
                     .parallelStream()
                     .map(currencyRateEntityMapper::toCurrencyRate)
-                    .filter(currencyRate -> isNotOld(date, currencyRate))
                     .toList();
         }
     }
@@ -80,25 +78,10 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
     }
 
     private boolean isRateCacheNotEmpty() {
-        return !rateCacheRepository.findAll()
-                .stream()
-                .filter(Objects::nonNull)
-                .parallel()
-                .filter(this::isRateEntityValid)
-                .toList()
-                .isEmpty();
+        return !rateCacheRepository.findAllValid().isEmpty();
     }
 
-    private boolean isRateEntityValid(CurrencyRateEntity rate) {
-        return Objects.nonNull(rate.getDate())
-                && Objects.nonNull(rate.getRate())
-                && Objects.nonNull(rate.getNumberCode())
-                && Objects.nonNull(rate.getCode())
-                && Objects.nonNull(rate.getName())
-                && Objects.nonNull(rate.getTimestamp());
-    }
-
-    private boolean isNotOld(LocalDate expectedDay, CurrencyRate currencyRate) {
-        return !expectedDay.isAfter(currencyRate.currencyDate());
+    private LocalDate getDate(List<CurrencyRate> currencyRates) {
+        return currencyRates.isEmpty() ? LocalDate.now() : currencyRates.get(0).currencyDate();
     }
 }

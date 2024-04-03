@@ -17,6 +17,7 @@ public class CurrencyRateBuilder {
     public static CurrencyRateBuilder builder() {
         return new CurrencyRateBuilder();
     }
+
     public CurrencyRateBuilder currencyCode(String currencyCode) {
         this.currencyCode = currencyCode;
         return this;
@@ -31,6 +32,7 @@ public class CurrencyRateBuilder {
         this.currencyNumberCode = currencyNumberCode;
         return this;
     }
+
     public CurrencyRateBuilder currency(Currency currency) {
         this.currencyCode = currency.currencyCode();
         this.currencyName = currency.name();

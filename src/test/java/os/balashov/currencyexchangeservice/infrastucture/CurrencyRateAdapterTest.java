@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import os.balashov.currencyexchangeservice.TestUtils;
+import os.balashov.currencyexchangeservice.utils.TestUtils;
 import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateEntity;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateHistory;

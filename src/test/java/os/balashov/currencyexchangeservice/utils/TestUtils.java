@@ -1,4 +1,4 @@
-package os.balashov.currencyexchangeservice;
+package os.balashov.currencyexchangeservice.utils;
 
 import os.balashov.currencyexchangeservice.domain.builder.CurrencyRateBuilder;
 import os.balashov.currencyexchangeservice.domain.entity.Currency;
