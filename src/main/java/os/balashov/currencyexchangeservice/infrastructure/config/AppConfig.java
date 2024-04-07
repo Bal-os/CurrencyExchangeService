@@ -31,26 +31,4 @@ public class AppConfig {
                                                      CurrencyRateProvider provider) {
         return new CurrencyRatesService(repository, provider);
     }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-        restTemplate.getInterceptors().add(getClientHttpRequestInterceptor());
-        return restTemplate;
-    }
-
-    private ClientHttpRequestInterceptor getClientHttpRequestInterceptor() {
-        return (request, body, execution) -> {
-            log.debug("Requesting {} {}", request.getMethod(), request.getURI());
-            log.debug("Request Headers: {}", request.getHeaders());
-            log.debug("Request Body: {}", new String(body, StandardCharsets.UTF_8));
-
-            ClientHttpResponse response = execution.execute(request, body);
-
-            log.debug("Response Status code: {}", response.getStatusCode());
-            log.debug("Response Headers: {}", response.getHeaders());
-
-            return response;
-        };
-    }
 }
