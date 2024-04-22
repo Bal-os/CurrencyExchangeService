@@ -1,10 +1,6 @@
 package os.balashov.currencyexchangeservice.infrastructure.data.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -38,7 +34,7 @@ public abstract class AbstractRateEntity {
     @Column(name = "rate_date", nullable = false)
     private LocalDate date;
 
-    public AbstractRateEntity (AbstractRateEntity entity) {
+    public AbstractRateEntity(AbstractRateEntity entity) {
         this.id = entity.getId();
         this.numberCode = entity.getNumberCode();
         this.code = entity.getCode();

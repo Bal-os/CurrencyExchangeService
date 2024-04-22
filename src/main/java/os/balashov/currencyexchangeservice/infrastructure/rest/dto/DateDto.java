@@ -15,18 +15,6 @@ public class DateDto {
         this.exception = exception;
     }
 
-    public LocalDate get() {
-        return dateObj.get();
-    }
-
-    public boolean isFallible() {
-        return exception.isPresent();
-    }
-
-    public String getExceptionMessage() {
-        return exception.get().getMessage();
-    }
-
     public static DateDto parseDate(String date) {
         LocalDate dateObj;
         try {
@@ -41,5 +29,17 @@ public class DateDto {
                     Optional.of(new RateDataSourceException("Date is in the future: " + date)));
         }
         return new DateDto(Optional.of(dateObj), Optional.empty());
+    }
+
+    public LocalDate get() {
+        return dateObj.get();
+    }
+
+    public boolean isFallible() {
+        return exception.isPresent();
+    }
+
+    public String getExceptionMessage() {
+        return exception.get().getMessage();
     }
 }

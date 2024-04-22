@@ -49,7 +49,8 @@ public class AbstractCurrencyRateEntityBuilder {
     }
 
     public <T extends AbstractRateEntity> AbstractRateEntity build() {
-        T currencyRate = (T) new AbstractRateEntity() {};
+        T currencyRate = (T) new AbstractRateEntity() {
+        };
         currencyRate.setNumberCode(numberCode);
         currencyRate.setCode(code);
         currencyRate.setName(name);

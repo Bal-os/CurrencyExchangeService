@@ -1,0 +1,12 @@
+azurewebapp {
+    subscription = '0b4068b0-ee9d-4918-a095-7ee760fbc0a6'
+    resourceGroup = 'CurrencyExchangeService'
+    appName = 'CurrencyExchangeService'
+    region = 'Germany West Central'
+    pricingTier = 'B1:1'
+    runtime {
+        os = 'Linux'
+        webContainer = 'Java 21 Tomcat'
+        javaVersion = 'Java 21'
+    }
+}

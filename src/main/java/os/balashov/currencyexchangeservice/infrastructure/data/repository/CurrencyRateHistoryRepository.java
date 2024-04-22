@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface CurrencyRateHistoryRepository extends JpaRepository<CurrencyRateHistory, Long> {
     List<CurrencyRateHistory> findByDate(LocalDate date);
+
     void deleteByDate(LocalDate date);
 }

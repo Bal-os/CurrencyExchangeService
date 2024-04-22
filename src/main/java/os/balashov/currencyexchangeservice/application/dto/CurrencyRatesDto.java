@@ -10,6 +10,18 @@ import java.util.Optional;
 
 public record CurrencyRatesDto(LocalDate rateDate, DataSource dataSource, List<CurrencyRate> currencyRates,
                                Optional<RateDataSourceException> exception) {
+    public static CurrencyRatesDto create(LocalDate rateDate,
+                                          DataSource dataSource,
+                                          RateDataSourceException exception) {
+        return new CurrencyRatesDto(rateDate, dataSource, Collections.emptyList(), Optional.ofNullable(exception));
+    }
+
+    public static CurrencyRatesDto create(LocalDate rateDate,
+                                          DataSource dataSource,
+                                          List<CurrencyRate> currencyRates) {
+        return new CurrencyRatesDto(rateDate, dataSource, currencyRates, Optional.empty());
+    }
+
     public boolean isUpdatable() {
         return !isCached() && !this.isEmptyOrFailed();
     }
@@ -32,18 +44,6 @@ public record CurrencyRatesDto(LocalDate rateDate, DataSource dataSource, List<C
 
     public String getExceptionMessage() {
         return this.exception.get().getMessage();
-    }
-
-    public static CurrencyRatesDto create(LocalDate rateDate,
-                                          DataSource dataSource,
-                                          RateDataSourceException exception) {
-        return new CurrencyRatesDto(rateDate, dataSource, Collections.emptyList(), Optional.ofNullable(exception));
-    }
-
-    public static CurrencyRatesDto create(LocalDate rateDate,
-                                          DataSource dataSource,
-                                          List<CurrencyRate> currencyRates) {
-        return new CurrencyRatesDto(rateDate, dataSource, currencyRates, Optional.empty());
     }
 }
 

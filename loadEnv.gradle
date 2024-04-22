@@ -1,0 +1,8 @@
+tasks.register('loadEnv') {
+    doLast {
+        file('.env').readLines()
+                .findAll { it =~ /=/ }
+                .collect { it.split('=') }
+                .each { System.getenv().put(it[0], it[1]) }
+    }
+}

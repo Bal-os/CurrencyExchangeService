@@ -9,9 +9,9 @@ public enum RatesDtoStatus {
     OTHER;
 
     public static RatesDtoStatus from(CurrencyRatesDto dto) {
-        return  dto.isFallible() ? FALLIBLE :
+        return dto.isFallible() ? FALLIBLE :
                 dto.isEmpty() ? EMPTY :
-                dto.isCached() ? CACHED : OTHER;
+                        dto.isCached() ? CACHED : OTHER;
     }
 }
 

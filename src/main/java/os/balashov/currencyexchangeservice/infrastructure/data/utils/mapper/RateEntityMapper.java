@@ -5,5 +5,6 @@ import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRa
 
 public interface RateEntityMapper {
     CurrencyRate toCurrencyRate(CurrencyRateEntity entity);
+
     CurrencyRateEntity toCurrencyRateEntity(CurrencyRate rate);
 }
