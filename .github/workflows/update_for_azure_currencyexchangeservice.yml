@@ -54,6 +54,6 @@ jobs:
         with:
           app-name: 'currencyexchangeservice'
           slot-name: 'Production'
-          package: /*SNAPSHOT.jar
+          package: /*-SNAPSHOT.jar
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BA44D8CC83114D9D9C5B98F711512549 }}
 
