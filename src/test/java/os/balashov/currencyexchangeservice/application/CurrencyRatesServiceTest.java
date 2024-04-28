@@ -1,21 +1,20 @@
 package os.balashov.currencyexchangeservice.application;
 
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import os.balashov.currencyexchangeservice.application.exception.RateDataSourceException;
-import os.balashov.currencyexchangeservice.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import os.balashov.currencyexchangeservice.application.dto.CurrencyRatesDto;
-import os.balashov.currencyexchangeservice.application.exception.RepositoryException;
+import os.balashov.currencyexchangeservice.application.exception.RateDataSourceException;
 import os.balashov.currencyexchangeservice.application.service.CurrencyRatesService;
 import os.balashov.currencyexchangeservice.domain.builder.CurrencyRateBuilder;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateProvider;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateRepository;
 import os.balashov.currencyexchangeservice.domain.entity.Currency;
 import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
+import os.balashov.currencyexchangeservice.utils.TestUtils;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -34,6 +33,7 @@ public class CurrencyRatesServiceTest implements TestUtils {
     @InjectMocks
     private CurrencyRatesService service;
     private Map<String, Currency> codeCurrencyMap;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -135,7 +135,7 @@ public class CurrencyRatesServiceTest implements TestUtils {
         List<CurrencyRate> emptyList = Collections.emptyList();
         Mockito.when(mockRepository.getCurrencyRates(date)).thenReturn(emptyList);
 
-        CurrencyRatesDto dto =  service.getRates(date);
+        CurrencyRatesDto dto = service.getRates(date);
 
         assertEquals(dto.currencyRates(), emptyList);
         assertTrue(dto.exception().isEmpty());

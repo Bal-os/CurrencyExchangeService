@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import os.balashov.currencyexchangeservice.utils.TestUtils;
 import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateEntity;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateHistory;
@@ -16,6 +15,7 @@ import os.balashov.currencyexchangeservice.infrastructure.data.service.CurrencyR
 import os.balashov.currencyexchangeservice.infrastructure.data.utils.mapper.RateEntityMapper;
 import os.balashov.currencyexchangeservice.infrastructure.data.utils.mapper.RateEntityMapperImpl;
 import os.balashov.currencyexchangeservice.infrastructure.data.utils.mapper.RateHistoryMapper;
+import os.balashov.currencyexchangeservice.utils.TestUtils;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -36,6 +36,7 @@ public class CurrencyRateAdapterTest implements TestUtils {
     private CurrencyRateHistoryRepository rateHistoryRepository;
     @Mock
     private CurrencyRateMutationRepository historyMutationRepository;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);

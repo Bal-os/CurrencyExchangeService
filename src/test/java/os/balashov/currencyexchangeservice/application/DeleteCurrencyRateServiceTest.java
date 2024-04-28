@@ -6,10 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import os.balashov.currencyexchangeservice.utils.TestUtils;
 import os.balashov.currencyexchangeservice.application.exception.RateDataSourceException;
 import os.balashov.currencyexchangeservice.application.service.DeleteCurrencyRateService;
 import os.balashov.currencyexchangeservice.domain.datasource.CurrencyRateRepository;
+import os.balashov.currencyexchangeservice.utils.TestUtils;
 
 import java.time.LocalDate;
 import java.util.Optional;

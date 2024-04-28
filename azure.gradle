@@ -7,6 +7,5 @@ azurewebapp {
     runtime {
         os = 'Linux'
         javaVersion = 'Java 17'
-        webContainer = 'Tomcat 9.0'
     }
 }

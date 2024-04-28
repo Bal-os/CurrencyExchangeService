@@ -9,11 +9,16 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public class CurrencyRatesDtoBuilder  {
+public class CurrencyRatesDtoBuilder {
     private LocalDate rateDate;
     private List<CurrencyRate> currencyRates;
     private DataSource dataSource;
     private RateDataSourceException exception;
+
+    public static CurrencyRatesDtoBuilder builder() {
+        return new CurrencyRatesDtoBuilder();
+    }
+
     public CurrencyRatesDtoBuilder rateDate(LocalDate rateDate) {
         this.rateDate = rateDate;
         return this;
@@ -36,9 +41,5 @@ public class CurrencyRatesDtoBuilder  {
 
     public CurrencyRatesDto build() {
         return new CurrencyRatesDto(rateDate, dataSource, currencyRates, Optional.ofNullable(exception));
-    }
-
-    public static CurrencyRatesDtoBuilder builder() {
-        return new CurrencyRatesDtoBuilder();
     }
 }
