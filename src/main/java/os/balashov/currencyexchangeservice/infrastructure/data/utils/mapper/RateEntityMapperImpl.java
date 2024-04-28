@@ -6,7 +6,7 @@ import os.balashov.currencyexchangeservice.domain.entity.CurrencyRate;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.AbstractRateEntity;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateEntity;
 import os.balashov.currencyexchangeservice.infrastructure.data.entity.CurrencyRateHistory;
-import os.balashov.currencyexchangeservice.infrastructure.data.utils.AbstractCurrencyRateEntityBuilder;
+import os.balashov.currencyexchangeservice.infrastructure.data.utils.CurrencyRateEntityBuilder;
 
 import java.math.BigDecimal;
 
@@ -44,7 +44,7 @@ public class RateEntityMapperImpl implements RateHistoryMapper, RateEntityMapper
     }
 
     private AbstractRateEntity toAbstractRateEntity(CurrencyRate rate) {
-        return AbstractCurrencyRateEntityBuilder.builder()
+        return CurrencyRateEntityBuilder.builder((t) -> new CurrencyRateEntity())
                 .code(rate.currency().currencyCode())
                 .name(rate.currency().name())
                 .numberCode(rate.currency().numberCode())

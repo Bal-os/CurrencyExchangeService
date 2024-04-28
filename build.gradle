@@ -2,12 +2,11 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'com.microsoft.azure.azurewebapp' version '1.1.0'
+    id 'com.microsoft.azure.azurewebapp' version '1.10.0'
 }
 
 group = 'os.balashov'
 version = '0.0.2-SNAPSHOT'
-sourceCompatibility = '20'
 
 configurations {
     compileOnly {
@@ -27,15 +26,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
+    runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.0"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.1"
     }
 }
 
@@ -46,9 +44,8 @@ tasks.named('test') {
 apply from: 'loadEnv.gradle'
 apply from: 'azure.gradle'
 
-bootJar {
-    mainClass = 'os/balashov/currencyexchangeservice/CurrencyExchangeServiceApplication'
-    archiveBaseName = 'CurrencyExchangeService'
-    archiveVersion = '0.0.2-SNAPSHOT'
+tasks.bootJar {
+    mainClass.set("os.balashov.currencyexchangeservice.CurrencyExchangeServiceApplication")
+    archiveBaseName.set("CurrencyExchangeService")
+    archiveVersion.set("0.0.2-SNAPSHOT")
 }
-

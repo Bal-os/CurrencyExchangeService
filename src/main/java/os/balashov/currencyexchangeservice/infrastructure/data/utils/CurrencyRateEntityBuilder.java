@@ -5,8 +5,10 @@ import os.balashov.currencyexchangeservice.infrastructure.data.entity.AbstractRa
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.function.Function;
 
-public class AbstractCurrencyRateEntityBuilder {
+public class CurrencyRateEntityBuilder<T extends AbstractRateEntity> {
+    private final Function<CurrencyRateEntityBuilder<T>, T> instanceSupplier;
     private String numberCode;
     private String code;
     private String name;
@@ -14,43 +16,46 @@ public class AbstractCurrencyRateEntityBuilder {
     private LocalDateTime timestamp;
     private LocalDate date;
 
-    public static AbstractCurrencyRateEntityBuilder builder() {
-        return new AbstractCurrencyRateEntityBuilder();
+    private CurrencyRateEntityBuilder(Function<CurrencyRateEntityBuilder<T>, T> instanceSupplier) {
+        this.instanceSupplier = instanceSupplier;
     }
 
-    public AbstractCurrencyRateEntityBuilder numberCode(String numberCode) {
+    public static <T extends AbstractRateEntity> CurrencyRateEntityBuilder<T> builder(Function<CurrencyRateEntityBuilder<T>, T> instanceSupplier) {
+        return new CurrencyRateEntityBuilder<>(instanceSupplier);
+    }
+
+    public CurrencyRateEntityBuilder<T> numberCode(String numberCode) {
         this.numberCode = numberCode;
         return this;
     }
 
-    public AbstractCurrencyRateEntityBuilder code(String code) {
+    public CurrencyRateEntityBuilder<T> code(String code) {
         this.code = code;
         return this;
     }
 
-    public AbstractCurrencyRateEntityBuilder name(String name) {
+    public CurrencyRateEntityBuilder<T> name(String name) {
         this.name = name;
         return this;
     }
 
-    public AbstractCurrencyRateEntityBuilder rate(BigDecimal rate) {
+    public CurrencyRateEntityBuilder<T> rate(BigDecimal rate) {
         this.rate = rate;
         return this;
     }
 
-    public AbstractCurrencyRateEntityBuilder timestamp(LocalDateTime timestamp) {
+    public CurrencyRateEntityBuilder<T> timestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
         return this;
     }
 
-    public AbstractCurrencyRateEntityBuilder date(LocalDate date) {
+    public CurrencyRateEntityBuilder<T> date(LocalDate date) {
         this.date = date;
         return this;
     }
 
-    public <T extends AbstractRateEntity> AbstractRateEntity build() {
-        T currencyRate = (T) new AbstractRateEntity() {
-        };
+    public T build() {
+        T currencyRate = instanceSupplier.apply(this);
         currencyRate.setNumberCode(numberCode);
         currencyRate.setCode(code);
         currencyRate.setName(name);
