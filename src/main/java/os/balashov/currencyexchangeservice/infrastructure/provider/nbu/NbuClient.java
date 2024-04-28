@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @Component
-@Profile("dev")
+@Profile("dev,prod")
 @FeignClient(name = "nbu-client", url = "${nbu.api.url}", configuration = FeignConfig.class)
 public interface NbuClient {
 
