@@ -10,8 +10,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
     - uses: actions/checkout@v4
@@ -27,13 +25,13 @@ jobs:
         gradle-version: '8.5'
     
     - name: Build with Gradle 8.5
-      run: gradle build
+      run: gradle clean build
 
     - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: java-app
-        path: '${{ github.workspace }}/target/*.jar'
+        path: '${{ github.workspace }}/build/libs/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,7 +48,7 @@ jobs:
       
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'currencyexchangeservice'
           slot-name: 'Production'
