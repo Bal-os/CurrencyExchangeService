@@ -31,13 +31,14 @@ jobs:
         id: find_jar
         run: |
           JAR_NAME=$(find build/libs -name '*.jar' ! -name '*-plain.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' | head -n 1)
-          echo "JAR_NAME=./$JAR_NAME" >> $GITHUB_ENV
+          echo "JAR_NAME=$JAR_NAME" >> $GITHUB_ENV
+          echo "JAR_PATH=build/libs/$JAR_NAME" >> $GITHUB_ENV
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: build/libs/*.jar
+          path: ${{ env.JAR_PATH }}
 
   test:
     runs-on: ubuntu-latest
@@ -56,7 +57,7 @@ jobs:
           name: java-app
 
       - name: Run Tests
-        run: java -jar ${{ env.JAR_NAME }} --test
+        run: java -jar ./${{ env.JAR_PATH }} --test
 
   deploy:
     runs-on: ubuntu-latest
@@ -76,7 +77,7 @@ jobs:
         with:
           app-name: 'currencyexchangeservice'
           slot-name: 'Production'
-          package: ${{ env.JAR_NAME }}
+          package: ${{ env.JAR_PATH }}
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BA44D8CC83114D9D9C5B98F711512549 }}
     
       - name: Save Deployment URL
