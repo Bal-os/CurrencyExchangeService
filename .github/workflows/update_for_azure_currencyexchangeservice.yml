@@ -27,15 +27,11 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build
 
-      - name: Find main JAR (exclude plain, sources, and javadoc)
-        id: find_jar
-        run: echo "JAR_NAME=$(ls build/libs/*[^plain].jar | head -n 1)" >> $GITHUB_ENV
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: ${{ env.JAR_NAME }}
+          path: build/libs/*.jar
 
   test:
     runs-on: ubuntu-latest
@@ -69,7 +65,7 @@ jobs:
         with:
           app-name: 'currencyexchangeservice'
           slot-name: 'Production'
-          package: ${{ env.JAR_NAME }}
+          package: ./CurrencyExchangeService-0.0.2-SNAPSHOT.jar
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BA44D8CC83114D9D9C5B98F711512549 }}
     
       - name: Save Deployment URL
