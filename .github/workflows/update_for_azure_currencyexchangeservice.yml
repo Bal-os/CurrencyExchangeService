@@ -33,16 +33,18 @@ jobs:
     needs: build
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: java-app
+      - name: List files in the artifact directory
+        run: ls -R
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'currencyexchangeservice'
           slot-name: 'Production'
-          package: './build/libs/CurrencyExchangeService-0.0.2-SNAPSHOT-plain.jar'
+          package: './CurrencyExchangeService-0.0.2-SNAPSHOT.jar'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BA44D8CC83114D9D9C5B98F711512549 }}
       - name: Save Deployment URL to a file
         run: echo ${{ steps.deploy-to-webapp.outputs.webapp-url }} > deployment-url.txt
