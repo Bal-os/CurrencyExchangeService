@@ -53,7 +53,6 @@ public class CurrencyRateMutationRepositoryImpl implements CurrencyRateMutationR
                 whereClause;
     }
 
-
     private String getTableName(Class<?> entityClass) {
         Table tableAnnotation = entityClass.getAnnotation(Table.class);
         if (tableAnnotation != null) {
@@ -78,3 +77,4 @@ public class CurrencyRateMutationRepositoryImpl implements CurrencyRateMutationR
         }
     }
 }
+

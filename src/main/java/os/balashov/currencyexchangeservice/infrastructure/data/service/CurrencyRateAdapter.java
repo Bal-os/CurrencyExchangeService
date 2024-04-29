@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,6 @@ import os.balashov.currencyexchangeservice.infrastructure.data.utils.mapper.Rate
 import java.time.LocalDate;
 import java.util.List;
 
-@Service
 @Slf4j
 @AllArgsConstructor
 public class CurrencyRateAdapter implements CurrencyRateRepository {
@@ -33,7 +31,7 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
 
     @Override
     @Async
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRES_NEW)
     public void updateCurrencyRate(List<CurrencyRate> currencyRates) {
         log.info("Updating currency rates: {}", currencyRates);
         if (currencyRates.isEmpty()) {
@@ -84,3 +82,4 @@ public class CurrencyRateAdapter implements CurrencyRateRepository {
         return currencyRates.isEmpty() ? LocalDate.now() : currencyRates.get(0).currencyDate();
     }
 }
+
