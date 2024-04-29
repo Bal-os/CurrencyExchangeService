@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
+@Component
 @AllArgsConstructor
 public class CurrencyRateAdapter implements CurrencyRateRepository {
     private final CurrencyRateCacheRepository rateCacheRepository;
