@@ -2,8 +2,9 @@ name: Build and deploy JAR app to Azure Web App - currencyexchangeservice
 
 on:
   push:
-    branches:
-      - update_for_azure
+    branches: [ "update_for_azure" ]
+  pull_request:
+    branches: [ "update_for_azure" ]
   workflow_dispatch:
 
 jobs:
@@ -56,4 +57,9 @@ jobs:
           slot-name: 'Production'
           package: './CurrencyExchangeService-0.0.2-SNAPSHOT.jar'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BA44D8CC83114D9D9C5B98F711512549 }}
+    
+      - name: Save Deployment URL
+        run: echo "APP_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
 
+      - name: Display App URL
+        run: echo "App Service Application URL:$APP_URL"
