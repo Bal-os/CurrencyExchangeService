@@ -7,5 +7,6 @@ azurewebapp {
     runtime {
         os = 'Linux'
         javaVersion = 'Java 17'
+        webContainer = 'Java 17 SE'
     }
 }

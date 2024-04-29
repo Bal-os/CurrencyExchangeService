@@ -29,9 +29,7 @@ jobs:
 
       - name: Find main JAR (exclude plain, sources, and javadoc)
         id: find_jar
-        run: |
-          JAR_NAME=$(find build/libs -name '*.jar' ! -name '*-plain.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' | head -n 1)
-          echo "JAR_NAME=$JAR_NAME" >> $GITHUB_ENV
+        run: echo "JAR_NAME=$(ls build/libs/*[^plain].jar | head -n 1)" >> $GITHUB_ENV
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -49,14 +47,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: java-app
 
-      - name: Run Tests
-        run: java -jar ./${{ env.JAR_NAME }} --test
+      - name: Run Tests with Gradle
+        run: ./gradlew test
 
   deploy:
     runs-on: ubuntu-latest
